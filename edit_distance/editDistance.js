@@ -1,42 +1,33 @@
 function editDistance(str1, str2) {
-  let cache = {};
+  let str1Len = str1.length;
+  let str2Len = str2.length;
+  cache = new Array(str1Len);
 
-  function help(str1, str2) {
-    console.log(str1, str2);
-    let str1Len = str1.length;
-    let str2Len = str2.length;
+  for (let i = 0; i < str1Len + 1; i++) {
+    cache[i] = Array(str2Len + 1);
+    cache[i].fill(0);
+  }
+  console.log(cache);
 
-    if (str1Len === 0) {
-      return str2Len;
-    } else if (str2Len === 0) {
-      return str1Len;
-    }
-
-    let el1 = str1[str1Len - 1];
-    let el2 = str2[str2Len - 1];
-    
-    if (str1Len === str2Len) {
-      debugger;
-      str1 = str1.slice(0, str1Len - 1);
-      str2 = str2.slice(0, str2Len - 1);
-      if (el1 === el2) {
-        return help(str1, str2);
-      } else if (el1 !== el2) {
-        return 1 + help(str1, str2)
-      }
-    } else {
-      if (el1 === el2) {
-        return help(str1.slice(0, str1Len - 1), str2.slice(0, str2Len - 1));
+  for (let i = 0; i < str1Len + 1; i++) {
+    for (let j = 0; j < str2Len + 1; j++) {
+      
+      if (i === 0) {
+        cache[i][j] = j;
+      } else if (j === 0) {
+        cache[i][j] = i;
+      } else if (str1[i] === str2[j]) {
+        cache[i][j] = cache[i - 1][j - 1];
       } else {
-        return 1 + Math.min(help(str1.slice(0, str1Len - 1), str2), help(str1, str2.slice(0, str2Len - 1)), help(str1.slice(0, str1Len - 1), str2.slice(0, str2Len - 1)));
+        cache[i][j] = 1 + Math.min(cache[i - 1][j], cache[i][j - 1], cache[i - 1][j - 1]);
       }
     }
   }
 
-  return help(str1, str2);
+  return cache[str1Len][str2Len];
 }
 
 console.log(editDistance('geek', 'gesek') === 1);
 console.log(editDistance('tiger', 'tigre') === 2);
-console.log(editDistance('duration', 'education')) //=== 2);
-console.log(editDistance('apple', 'dapper')) //=== 3);
+console.log(editDistance('duration', 'education') === 2);
+console.log(editDistance('apple', 'dapper') === 3);
